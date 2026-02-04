@@ -2,6 +2,7 @@
 # Author Cathal Redmond Date 4 Feb 2026
 # this Lab is a n excercise to retrieve train timetables form Irish Rail API and perfrom some data anaylsis on the information retunred. 
 
+# imports
 import requests
 import csv
 from xml.dom.minidom import parseString
@@ -16,7 +17,7 @@ retrieveTags = ['TrainStatus',
                 'Direction'
                 ]
 
-
+# define variables
 url = "http://api.irishrail.ie/realtime/realtime.asmx/getCurrentTrainsXML"
 page = requests.get(url)
 doc = parseString(page.content)
