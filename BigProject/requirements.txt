@@ -1,0 +1,11 @@
+## requirements.txt 
+## Cathal Redmond
+## Date 05 May 2026
+
+# This file lists the dependencies for the project.
+
+# Flask is the web framework used for building the application.
+Flask==2.0.3
+# sqllite is used for the database management.
+sqlite3==0.0.1
+
