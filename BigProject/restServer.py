@@ -5,9 +5,7 @@
 
 # imports
 from flask import Flask, request, jsonify
-import requests
-from test import BookDAO
-
+from bookDAO import BookDAO
 
 # create the Flask app
 app = Flask(__name__)
@@ -27,20 +25,35 @@ def index():
 # curl http://127.0.0.1:5000/books
 @app.route('/books', methods=['GET'])
 def getall():
-    return jsonify(BookDAO.getAll())
-
-
-
+    return jsonify(book_dao.getAll())
 
 # find by ID
 # curl http://127.0.0.1:5000/books/1
 
+@app.route('/books/<int:id>', methods=['GET'])
+def findby(id):
+    book = BookDAO.findByID(id)
+    if book:
+        return jsonify(book)
+    else:
+        return jsonify({"error": "Book not found"}), 404
 
-def receive_data():
+# create
+# curl -X POST -H "Content-Type: application/json" -d '{"title": "New Book", "author": "Author Name"}' http://127.0.0.1:5000/books
+
+@app.route('/books', methods=['POST'])
+def create():
     # get the JSON data from the request
-    data = request.get_json()
+    jsonstring = request.json()
+    book = {}
+    book["title"] = jsonstring["title"]
+    book["author"] = jsonstring["author"]
+    book["price"] = jsonstring["price"]
+    book["isbn"] = jsonstring["isbn"]
+    bookDAO.create(jsonstring)
+
     # print the received data to the console for testing
-    print("Received data:", data)
+    print("Received data:", jsonstring)
     # return a response to the client
     return jsonify({"message": "Data received successfully!"}), 200 
 

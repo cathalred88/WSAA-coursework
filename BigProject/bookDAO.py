@@ -1,16 +1,17 @@
-## test.py
+## bookDAO.py
 ## Author Cathal Redmond
 ## Data 05 May 2026
 
-# This test file will be used to develop the code for the big project for Web services and Applications coursework. 
+# This file will be used to develop the code for the big project for Web services and Applications coursework. 
 # It will be used to test the functionality of the code as it is developed.
+# renamed from test.py to bookDAO.py on 06 May 2026to better reflect its purpose as a data access object for the books in the REST API.
 
 # imports
 from urllib import response
 
 import requests
 
-# define the functions for the test file
+# define the functions for the bookDAO file
 class BookDAO:
     # This class will be used to test the data access object for the books in the REST API
     def __init__(self):
