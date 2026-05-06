@@ -7,38 +7,120 @@
 # renamed from test.py to bookDAO.py on 06 May 2026to better reflect its purpose as a data access object for the books in the REST API.
 
 # imports
-from urllib import response
+import mysql.connector
 
-import requests
-
-# define the functions for the bookDAO file
 class BookDAO:
-    # This class will be used to test the data access object for the books in the REST API
+
     def __init__(self):
-        self.base_url = 'http://localhost:5000/api/data'
+        self.host = "localhost"
+        self.user = "root"
+        self.password = ""
+        self.database = "bookdb"
 
-    def getall(self):
-        # This function will be used to test the GET request to the REST API
-        response = requests.get(self.base_url)
-        print("GET response:", response.json())
+    # -------------------------
+    # Database Connection
+    # -------------------------
+    def getConnection(self):
+        return mysql.connector.connect(
+            host=self.host,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
 
-    def findbyid(self, id):
-        # This function will be used to test the GET request to the REST API with an ID parameter
-        response = requests.get(f'http://localhost:5000/api/data/{id}')
-        print("GET by ID response:", response.json())
+    # -------------------------
+    # Convert DB row to Dict
+    # -------------------------
+    def convertToDictionary(self, resultLine):
+        return {
+            "id": resultLine[0],
+            "title": resultLine[1],
+            "author": resultLine[2],
+            "price": float(resultLine[3])
+        }
 
+    # -------------------------
+    # Get All Books
+    # -------------------------
+    def getAll(self):
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        sql = "SELECT * FROM books"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+
+        books = []
+        for row in results:
+            books.append(self.convertToDictionary(row))
+
+        cursor.close()
+        connection.close()
+        return books
+
+    # -------------------------
+    # Find By ID
+    # -------------------------
+    def findByID(self, id):
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        sql = "SELECT * FROM books WHERE id = %s"
+        values = (id,)
+        cursor.execute(sql, values)
+        result = cursor.fetchone()
+
+        cursor.close()
+        connection.close()
+
+        if result:
+            return self.convertToDictionary(result)
+        return None
+
+    # -------------------------
+    # Create Book
+    # -------------------------
     def create(self, book):
-        # This function will be used to test the POST request to the REST API to create a new book
-        response = requests.post(self.base_url, json=book)
-        print("POST response:", response.json())
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        sql = "INSERT INTO books (title, author, price) VALUES (%s, %s, %s)"
+        values = (book["title"], book["author"], book["price"])
+        cursor.execute(sql, values)
+        connection.commit()
 
+        book["id"] = cursor.lastrowid
+
+        cursor.close()
+        connection.close()
+        return book
+
+    # -------------------------
+    # Update Book
+    # -------------------------
     def update(self, id, book):
-        # This function will be used to test the PUT request to the REST API to update a book by ID
-        response = requests.put(f'http://localhost:5000/api/data/{id}', json=book)
-        print("PUT response:", response.json())
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        sql = "UPDATE books SET title=%s, author=%s, price=%s WHERE id=%s"
+        values = (book["title"], book["author"], book["price"], id)
+        cursor.execute(sql, values)
+        connection.commit()
 
+        cursor.close()
+        connection.close()
+
+        book["id"] = id
+        return book
+
+    # -------------------------
+    # Delete Book
+    # -------------------------
     def delete(self, id):
-        # This function will be used to test the DELETE request to the REST API to delete a book by ID
-        response = requests.delete(f'http://localhost:5000/api/data/{id}')
-        print("DELETE response:", response.json()) 
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        sql = "DELETE FROM books WHERE id = %s"
+        values = (id,)
+        cursor.execute(sql, values)
+        connection.commit()
 
+        cursor.close()
+        connection.close()
+
+        return {"message": "Book deleted"}

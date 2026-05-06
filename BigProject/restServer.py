@@ -4,62 +4,102 @@
 # This is the main REST server file for the big project for Web services and Applications coursework.
 
 # imports
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from bookDAO import BookDAO
 
-# create the Flask app
+# Create Flask app
 app = Flask(__name__)
+
+# Create DAO instance
 book_dao = BookDAO()
 
-# define the route for the REST API
-@app.route('/api/data', methods=['POST'])
 
-
-# Welcome Message
+# -------------------------
+# Welcome Route
+# -------------------------
 @app.route('/')
 def index():
-    return "Welcome to the REST API for the Big Project!"
+    return "Welcome to the Book REST API"
 
 
-# getall
-# curl http://127.0.0.1:5000/books
+# -------------------------
+# GET All Books
+# -------------------------
 @app.route('/books', methods=['GET'])
-def getall():
+def getAll():
     return jsonify(book_dao.getAll())
 
-# find by ID
-# curl http://127.0.0.1:5000/books/1
 
+# -------------------------
+# GET Book By ID
+# -------------------------
 @app.route('/books/<int:id>', methods=['GET'])
-def findby(id):
-    book = BookDAO.findByID(id)
-    if book:
-        return jsonify(book)
-    else:
-        return jsonify({"error": "Book not found"}), 404
+def findByID(id):
+    book = book_dao.findByID(id)
+    if book is None:
+        abort(404, description="Book not found")
+    return jsonify(book)
 
-# create
-# curl -X POST -H "Content-Type: application/json" -d '{"title": "New Book", "author": "Author Name"}' http://127.0.0.1:5000/books
 
+# -------------------------
+# CREATE Book
+# -------------------------
 @app.route('/books', methods=['POST'])
 def create():
-    # get the JSON data from the request
-    jsonstring = request.json()
-    book = {}
-    book["title"] = jsonstring["title"]
-    book["author"] = jsonstring["author"]
-    book["price"] = jsonstring["price"]
-    book["isbn"] = jsonstring["isbn"]
-    bookDAO.create(jsonstring)
+    if not request.json:
+        abort(400, description="Request must be JSON")
 
-    # print the received data to the console for testing
-    print("Received data:", jsonstring)
-    # return a response to the client
-    return jsonify({"message": "Data received successfully!"}), 200 
+    required_fields = ["title", "author", "price"]
+
+    for field in required_fields:
+        if field not in request.json:
+            abort(400, description=f"{field} is required")
+
+    book = {
+        "title": request.json["title"],
+        "author": request.json["author"],
+        "price": request.json["price"]
+    }
+
+    created_book = book_dao.create(book)
+    return jsonify(created_book), 201
 
 
-# run the Flask app
+# -------------------------
+# UPDATE Book
+# -------------------------
+@app.route('/books/<int:id>', methods=['PUT'])
+def update(id):
+    book = book_dao.findByID(id)
+    if book is None:
+        abort(404, description="Book not found")
+
+    if not request.json:
+        abort(400, description="Request must be JSON")
+
+    updatedBook = {
+        "title": request.json.get("title", book["title"]),
+        "author": request.json.get("author", book["author"]),
+        "price": request.json.get("price", book["price"])
+    }
+
+    result = book_dao.update(id, updatedBook)
+    return jsonify(result)
+
+
+# -------------------------
+# DELETE Book
+# -------------------------
+@app.route('/books/<int:id>', methods=['DELETE'])
+def delete(id):
+    result = book_dao.delete(id)
+    if result is None:
+        abort(404, description="Book not found")
+    return jsonify({"message": "Book deleted"})
+
+
+# -------------------------
+# Run Server
+# -------------------------
 if __name__ == '__main__':
-    app.run(debug=True) 
-
-
+    app.run(debug=True)
