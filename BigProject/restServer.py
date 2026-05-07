@@ -19,7 +19,7 @@ book_dao = BookDAO()
 # -------------------------
 @app.route('/')
 def index():
-    return "Welcome to the Book REST API"
+    return "Test message for Cathal's REST API for WSAA coursework. Use /books to access the book collection."
 
 
 # -------------------------
