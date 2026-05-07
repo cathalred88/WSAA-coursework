@@ -4,10 +4,9 @@
 # This is the main REST server file for the big project for Web services and Applications coursework.
 
 # imports
-from flask import Flask, request, jsonify, abort
-from bookDAO import BookDAO
+from flask import Flask, request, jsonify, abort, render_template
 from flask_cors import CORS
-
+from bookDAO import BookDAO
 
 # Create Flask app
 app = Flask(__name__)
@@ -22,7 +21,7 @@ book_dao = BookDAO()
 # -------------------------
 @app.route('/')
 def index():
-    return "Test message for Cathal's REST API for WSAA coursework. Use /books to access the book collection."
+    return render_template('index.html')
 
 
 # -------------------------
