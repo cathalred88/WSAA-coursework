@@ -1,4 +1,4 @@
-<!--
+getall<!--
 ## index.html
 ## Author: Cathal Redmond using Chat GPT Prompt: "Please create for me a client-side application that will interact with an API that performs CRUD operations on books. Use jQuery AJAX for the API calls. Put the HTML, CSS, and Javascript in separate files"
 ## Date: 2026-May-07
@@ -12,8 +12,7 @@
     <title>Book Manager</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/styles.css">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
@@ -65,6 +64,6 @@
     </div>
 
     <!-- JS -->
-    <script src="js/app.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

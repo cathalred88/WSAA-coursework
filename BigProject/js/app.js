@@ -4,7 +4,9 @@
 
 
 
-const apiUrl = "http://127.0.0.1:5000/books";
+const apiUrl = "http://localhost:5000/";
+const ENDPOINT = "books";
+const AUTH_TOKEN = ""; // Set your auth token here if needed
 
 // Load books on page ready
 $(document).ready(function () {

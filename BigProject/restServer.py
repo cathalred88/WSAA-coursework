@@ -6,9 +6,12 @@
 # imports
 from flask import Flask, request, jsonify, abort
 from bookDAO import BookDAO
+from flask_cors import CORS
+
 
 # Create Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Create DAO instance
 book_dao = BookDAO()
