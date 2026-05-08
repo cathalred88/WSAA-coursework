@@ -4,8 +4,7 @@
 
 
 
-const apiUrl = "http://localhost:5000/";
-const ENDPOINT = "books";
+const apiUrl = "http://localhost:5000/books";
 const AUTH_TOKEN = ""; // Set your auth token here if needed
 
 // Load books on page ready
